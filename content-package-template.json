@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "packageId": "my-pali-content",
+  "packageVersion": "1.0.0",
+  "title": "巴利语词汇内容包",
+  "language": "pi",
+  "description": "请按 README 中的数据格式填写。",
+  "cards": []
+}

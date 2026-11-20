@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pali-learning:content-package:schema:1",
+  "title": "Pali Learning Content Package",
+  "type": "object",
+  "required": ["schemaVersion", "packageId", "packageVersion", "cards"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packageId": { "type": "string", "minLength": 1 },
+    "packageVersion": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" },
+    "language": { "const": "pi" },
+    "description": { "type": "string" },
+    "cards": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/card" }
+    }
+  },
+  "$defs": {
+    "card": {
+      "type": "object",
+      "required": ["id", "headword"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{1,79}$" },
+        "headword": { "type": "string", "minLength": 1 },
+        "display": { "type": "string" },
+        "meaning": { "type": "string" },
+        "category": { "type": "string" },
+        "hint": { "type": "string" },
+        "partOfSpeech": { "type": "string" },
+        "core": { "type": "string" },
+        "explanation": { "type": "string" },
+        "story": { "type": "string" },
+        "morphology": { "type": "object" },
+        "senses": { "type": "array", "items": { "type": "object" } },
+        "usage": { "type": "array", "items": { "$ref": "#/$defs/usage" } },
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } },
+        "provenance": { "type": "array", "items": { "type": "object" } },
+        "contentStatus": { "type": "string" },
+        "active": { "type": "boolean", "default": true },
+        "deprecatedReason": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "paliText": { "type": "string" },
+        "text": { "type": "string" },
+        "translation": { "type": "string" },
+        "verificationStatus": { "type": "string", "enum": ["verified", "needs-review", "teaching-example"] },
+        "source": {
+          "type": "object",
+          "properties": {
+            "collection": { "type": "string" },
+            "reference": { "type": "string" },
+            "segmentId": { "type": "string" },
+            "url": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "relation": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "targetId": { "type": "string" },
+        "type": { "type": "string", "enum": ["synonym", "antonym", "derivation", "collocation", "semantic", "teaching", "contrast"] },
+        "label": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

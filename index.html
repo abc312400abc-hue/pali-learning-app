@@ -20,7 +20,11 @@
           <div class="brand-subtitle">巴利语学习</div>
         </div>
       </div>
-      <div class="known-counter" aria-label="已认识词汇数量">已认识 <strong id="knownCount">0</strong></div>
+      <div class="topbar-actions">
+        <div class="known-counter" aria-label="已认识词汇数量">已认识 <strong id="knownCount">0</strong></div>
+        <button class="manage-button" id="importButton" type="button">导入词汇</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden />
+      </div>
     </header>
 
     <section class="session-heading" aria-live="polite">
@@ -81,7 +85,7 @@
 
     <footer class="bottom-bar">
       <button class="quiet-button" id="undoButton" type="button" disabled>↶ 撤销上一步</button>
-      <span class="offline-indicator"><span class="offline-dot"></span>本地保存</span>
+      <div class="footer-actions"><button class="quiet-button" id="templateButton" type="button">下载词汇模板</button><span class="offline-indicator"><span class="offline-dot"></span>本地保存</span></div>
     </footer>
   </main>
 
@@ -108,12 +112,13 @@
         </section>
         <section class="detail-section">
           <p class="section-label">真实用法</p>
-          <div class="source-note">正式经文例句正在整理核对中。此处是教学说明，不是经文引文。</div>
+          <div id="detailUsage"><div class="source-note">尚无经过核对的经典例句。这里不会用自编句子冒充经文。</div></div>
         </section>
         <section class="detail-section">
           <p class="section-label">关联词</p>
           <div class="related-list" id="relatedWords"></div>
           <p class="related-note">关联用于帮助理解，不代表这些词之间一定存在词源关系。</p>
+          <p class="content-status" id="detailContentStatus"></p>
         </section>
       </div>
       <div class="detail-footer">
