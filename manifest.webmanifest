@@ -1,0 +1,14 @@
+{
+  "name": "巴利语学习",
+  "short_name": "巴利语",
+  "description": "一个离线优先的个人巴利语学习工具",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f1e8",
+  "theme_color": "#f4f1e8",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

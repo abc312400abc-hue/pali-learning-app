@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f1e8" />
+  <meta name="description" content="一个离线优先的个人巴利语学习工具。" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>巴利语 · 学习</title>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">प</div>
+        <div>
+          <div class="brand-title">PĀLI</div>
+          <div class="brand-subtitle">巴利语学习</div>
+        </div>
+      </div>
+      <div class="known-counter" aria-label="已认识词汇数量">已认识 <strong id="knownCount">0</strong></div>
+    </header>
+
+    <section class="session-heading" aria-live="polite">
+      <div>
+        <p class="eyebrow">词汇卡片</p>
+        <h1>先认识一个词</h1>
+      </div>
+      <div class="counter"><span id="remainingCount">1</span><span class="counter-divider">/</span><span id="totalCount">3</span></div>
+    </section>
+
+    <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+
+    <section class="deck-stage" id="deckStage" aria-label="巴利语词汇卡片">
+      <div class="card-shadow card-shadow-back"></div>
+      <div class="card-shadow card-shadow-mid"></div>
+      <article class="word-card" id="wordCard" tabindex="0" role="button" aria-label="点击查看词汇详情">
+        <div class="card-topline">
+          <span class="card-tag" id="wordCategory">核心词汇</span>
+          <span class="card-index" id="wordIndex">01</span>
+        </div>
+        <div class="word-center">
+          <p class="word-script" id="wordPali">dukkha</p>
+          <div class="word-rule"></div>
+          <p class="word-meaning" id="wordMeaning">苦；不圆满</p>
+          <p class="word-hint" id="wordHint">点击卡片，进入这个词的世界</p>
+        </div>
+        <div class="card-bottomline">
+          <span>巴利语 · 词汇探索</span>
+          <span class="tap-detail">查看详情 <span aria-hidden="true">↗</span></span>
+        </div>
+        <div class="swipe-stamp stamp-known" id="knownStamp">认识</div>
+        <div class="swipe-stamp stamp-unknown" id="unknownStamp">不认识</div>
+      </article>
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-symbol">✓</div>
+        <h2>这一轮卡片看完了</h2>
+        <p>你可以重新浏览这些演示词汇。</p>
+        <button class="primary-button" id="restartButton" type="button">重新浏览</button>
+      </div>
+    </section>
+
+    <p class="gesture-hint" id="gestureHint">左滑：不认识 <span>·</span> 右滑：认识 <span>·</span> 点击：详情</p>
+
+    <nav class="action-bar" aria-label="词汇操作">
+      <button class="action-button action-unknown" id="unknownButton" type="button">
+        <span class="action-icon" aria-hidden="true">×</span>
+        <span>不认识</span>
+      </button>
+      <button class="action-button action-detail" id="detailButton" type="button">
+        <span class="action-icon" aria-hidden="true">i</span>
+        <span>详情</span>
+      </button>
+      <button class="action-button action-known" id="knownButton" type="button">
+        <span class="action-icon" aria-hidden="true">✓</span>
+        <span>认识</span>
+      </button>
+    </nav>
+
+    <footer class="bottom-bar">
+      <button class="quiet-button" id="undoButton" type="button" disabled>↶ 撤销上一步</button>
+      <span class="offline-indicator"><span class="offline-dot"></span>本地保存</span>
+    </footer>
+  </main>
+
+  <div class="detail-overlay" id="detailOverlay" hidden>
+    <section class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <div class="sheet-grabber"></div>
+      <header class="detail-header">
+        <div>
+          <p class="eyebrow">词汇详情</p>
+          <h2 id="detailTitle">dukkha</h2>
+          <p class="detail-subtitle" id="detailSubtitle">名词 · 中性</p>
+        </div>
+        <button class="close-button" id="closeDetailButton" type="button" aria-label="关闭详情">×</button>
+      </header>
+      <div class="detail-scroll">
+        <section class="detail-section detail-intro">
+          <p class="section-label">核心语义</p>
+          <p class="detail-lead" id="detailCore">苦、不圆满、难以满足。</p>
+          <p class="detail-copy" id="detailExplanation">它不只指身体疼痛，也可以指经验中不稳定、不能带来持久满足的性质。这里先从实际语境理解，不急着把它压缩成一个中文词。</p>
+        </section>
+        <section class="detail-section">
+          <p class="section-label">观察这个词</p>
+          <div class="reflection-card" id="detailStory">当一个愉快的感受正在变化时，我们能否要求它永远保持原样？这个问题可以帮助我们观察 dukkha 的一个面向。</div>
+        </section>
+        <section class="detail-section">
+          <p class="section-label">真实用法</p>
+          <div class="source-note">正式经文例句正在整理核对中。此处是教学说明，不是经文引文。</div>
+        </section>
+        <section class="detail-section">
+          <p class="section-label">关联词</p>
+          <div class="related-list" id="relatedWords"></div>
+          <p class="related-note">关联用于帮助理解，不代表这些词之间一定存在词源关系。</p>
+        </section>
+      </div>
+      <div class="detail-footer">
+        <button class="secondary-button" id="detailUnknownButton" type="button">不认识</button>
+        <button class="primary-button" id="detailKnownButton" type="button">认识</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
