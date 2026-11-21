@@ -1,6 +1,13 @@
-# Pāli Learning App — v2 content system
+# Pāli Learning App — v3 content system
 
 A personal, offline-first Pāli vocabulary learning PWA. No account, server, analytics, ads, or cloud sync.
+
+## What's new in v3
+
+- Related-word chips are interactive: tapping one opens that word's detail view.
+- A back button inside the detail sheet returns to the previously viewed related word.
+- Learning actions taken while viewing a related word apply to that displayed word.
+- The service-worker cache name is updated to v3.
 
 ## What's new in v2
 
@@ -16,7 +23,7 @@ A personal, offline-first Pāli vocabulary learning PWA. No account, server, ana
 
 ## Deploy
 
-Upload the contents of this folder to the root of your GitHub Pages repository, replacing the old files. Keep the same repository and Pages settings. After deployment, open the site in Chrome and refresh once. If the old shell remains cached, close the installed PWA/tab and reopen the site; the service worker uses a new cache name (`pali-learning-shell-v2`).
+Upload the contents of this folder to the root of your GitHub Pages repository, replacing the old files. Keep the same repository and Pages settings. After deployment, open the site in Chrome and refresh once. If the old shell remains cached, close the installed PWA/tab and reopen the site; the service worker uses a new cache name (`pali-learning-shell-v3`).
 
 ## Content package format
 

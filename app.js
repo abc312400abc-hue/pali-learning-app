@@ -45,6 +45,8 @@ let state;
 let cards = [];
 let learning = {};
 let currentCard = null;
+let detailCardId = null;
+let detailHistory = [];
 let drag = null;
 let toastTimer;
 
@@ -201,17 +203,21 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2200);
 }
-async function classify(direction) {
-  if (!currentCard) return;
-  const card = currentCard;
+async function classifyCard(cardId, direction) {
+  const card = cardById(cardId);
+  if (!card) return;
   const previous = learning[card.id] ? structuredClone(learning[card.id]) : null;
   state.history.push({ id: card.id, previous, direction });
   await saveLearning({ cardId: card.id, status: direction === 'right' ? 'RECOGNIZED' : 'LEARNING',
     next_review_at: new Date(Date.now() + 86400000).toISOString(), correct_streak: 0, last_action_at: new Date().toISOString() });
-  state.queue.shift();
+  state.queue = state.queue.filter(id => id !== card.id);
   await saveAppState();
   renderCard();
-  showToast(direction === 'right' ? '已标记为认识' : '已放入学习中');
+  showToast(direction === 'right' ? `已标记 ${card.display} 为认识` : `已将 ${card.display} 放入学习中`);
+}
+async function classify(direction) {
+  if (!currentCard) return;
+  return classifyCard(currentCard.id, direction);
 }
 async function undo() {
   const action = state.history.pop();
@@ -228,20 +234,26 @@ async function undo() {
   renderCard();
   showToast('已撤销上一步');
 }
-function openDetails() {
-  if (!currentCard) return;
-  $('detailTitle').textContent = currentCard.display;
-  $('detailSubtitle').textContent = currentCard.partOfSpeech || '词类信息待补充';
-  $('detailCore').textContent = currentCard.core || currentCard.meaning || '核心语义待补充';
-  $('detailExplanation').textContent = currentCard.explanation || '详细解释尚未添加。';
-  $('detailStory').textContent = currentCard.story || '教学内容尚未添加。';
+function openDetails(cardId = currentCard?.id) {
+  const targetCard = cardById(cardId);
+  if (!targetCard) {
+    showToast('找不到这个关联词。请检查词汇包中的 targetId。');
+    return;
+  }
+  if ($('detailOverlay').hidden) detailHistory = [];
+  detailCardId = targetCard.id;
+  $('detailTitle').textContent = targetCard.display;
+  $('detailSubtitle').textContent = targetCard.partOfSpeech || '词类信息待补充';
+  $('detailCore').textContent = targetCard.core || targetCard.meaning || '核心语义待补充';
+  $('detailExplanation').textContent = targetCard.explanation || '详细解释尚未添加。';
+  $('detailStory').textContent = targetCard.story || '教学内容尚未添加。';
   const usage = $('detailUsage');
   usage.replaceChildren();
-  if (!currentCard.usage.length) {
+  if (!targetCard.usage.length) {
     const note = document.createElement('div'); note.className = 'source-note';
     note.textContent = '尚无经过核对的经典例句。这里不会用自编句子冒充经文。'; usage.append(note);
   } else {
-    currentCard.usage.forEach(item => {
+    targetCard.usage.forEach(item => {
       const box = document.createElement('div'); box.className = 'usage-item';
       const pali = document.createElement('p'); pali.className = 'usage-pali'; pali.textContent = item.paliText || item.text || '';
       const translation = document.createElement('p'); translation.className = 'usage-translation'; translation.textContent = item.translation || '';
@@ -251,17 +263,37 @@ function openDetails() {
       box.append(pali, translation, source); usage.append(box);
     });
   }
-  $('relatedWords').replaceChildren(...currentCard.relations.map(rel => {
-    const chip = document.createElement('span'); chip.className = 'related-chip';
+  $('relatedWords').replaceChildren(...targetCard.relations.map(rel => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'related-chip';
     chip.textContent = rel.label || rel.targetId;
     chip.title = `${rel.type || '关联'}：${rel.note || ''}`;
+    const exists = Boolean(cardById(rel.targetId));
+    chip.disabled = !exists;
+    chip.setAttribute('aria-label', exists ? `打开关联词 ${chip.textContent}` : `关联词 ${chip.textContent} 尚未导入`);
+    if (exists) chip.addEventListener('click', () => {
+      detailHistory.push(detailCardId);
+      openDetails(rel.targetId);
+    });
     return chip;
   }));
-  $('detailContentStatus').textContent = `内容状态：${currentCard.contentStatus || 'draft'} · 学习状态：${statusFor(currentCard.id)}`;
+  $('detailBackButton').hidden = detailHistory.length === 0;
+  $('detailContentStatus').textContent = `内容状态：${targetCard.contentStatus || 'draft'} · 学习状态：${statusFor(targetCard.id)}`;
   $('detailOverlay').hidden = false;
   document.body.style.overflow = 'hidden';
+  $('detailScroll').scrollTop = 0;
 }
-function closeDetails() { $('detailOverlay').hidden = true; document.body.style.overflow = ''; }
+function backToPreviousDetail() {
+  const previousId = detailHistory.pop();
+  if (previousId) openDetails(previousId);
+}
+function closeDetails() {
+  $('detailOverlay').hidden = true;
+  document.body.style.overflow = '';
+  detailCardId = null;
+  detailHistory = [];
+}
 async function restartDeck() {
   state.queue = activeCards().map(card => card.id);
   state.history = [];
@@ -388,8 +420,9 @@ async function init() {
   $('restartButton').addEventListener('click', restartDeck);
   $('closeDetailButton').addEventListener('click', closeDetails);
   $('detailOverlay').addEventListener('click', event => { if (event.target === $('detailOverlay')) closeDetails(); });
-  $('detailKnownButton').addEventListener('click', async () => { closeDetails(); await classify('right'); });
-  $('detailUnknownButton').addEventListener('click', async () => { closeDetails(); await classify('left'); });
+  $('detailKnownButton').addEventListener('click', async () => { const id = detailCardId; closeDetails(); if (id) await classifyCard(id, 'right'); });
+  $('detailUnknownButton').addEventListener('click', async () => { const id = detailCardId; closeDetails(); if (id) await classifyCard(id, 'left'); });
+  $('detailBackButton').addEventListener('click', backToPreviousDetail);
   $('wordCard').addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetails(); } });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('detailOverlay').hidden) closeDetails(); });
   $('importButton').addEventListener('click', () => $('importFile').click());

@@ -88,7 +88,11 @@ h1 { font-family: Georgia, "Noto Serif", serif; font-size: clamp(27px, 7vw, 34px
 .reflection-card { background: #eae6dc; border-left: 3px solid #b38a4c; border-radius: 0 10px 10px 0; padding: 14px 15px; font: 15px/1.8 Georgia, serif; color: #424a40; }
 .source-note { color: #777b71; font-size: 12px; line-height: 1.7; background: #eeeadf; padding: 12px 14px; border-radius: 10px; }
 .related-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.related-chip { border: 1px solid #d9d4c8; background: #faf8f1; border-radius: 20px; padding: 7px 11px; color: var(--green); font-size: 12px; }
+.related-chip { border: 1px solid #d9d4c8; background: #faf8f1; border-radius: 20px; padding: 7px 11px; color: var(--green); font: inherit; font-size: 12px; cursor: pointer; }
+.related-chip:active { transform: scale(.97); }
+.related-chip:disabled { opacity: .45; cursor: not-allowed; }
+.detail-back-button { border: 0; background: transparent; color: var(--green); padding: 7px 9px 7px 0; font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.detail-back-button[hidden] { display: none; }
 .related-note { color: #98968b; font-size: 10px; line-height: 1.6; margin: 10px 0 0; }
 .detail-footer { display: flex; gap: 10px; padding-top: 12px; }
 .primary-button, .secondary-button { border: 0; border-radius: 12px; padding: 13px 18px; font-weight: 650; cursor: pointer; }
